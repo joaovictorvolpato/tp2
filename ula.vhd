@@ -35,9 +35,8 @@ architecture arch of ula is
     signal resultIncr, resultDecr : SIGNED(X-1 downto 0);
     signal resultAnd, resultOr, resultXor: SIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
-	 signal reset, pronto: STD_LOGIC;
-	 signal zeros: STD_LOGIC(X-1 downto 0);
-
+	signal reset, pronto: STD_LOGIC;
+	signal sigZeros, sigOne, sigOnes: STD_LOGIC(X-1 downto 0);
 
     
     component wallace8 is
@@ -62,13 +61,14 @@ architecture arch of ula is
     end component;
 
 begin
-	  zeros <= (other => '0');
-		
+     sigZeros <= (other => '0');
+     sigOnes <= (other => '1');
+     sigOne <= zeros + '1';
      SOMASUB: somasub8bits port map(A, B, Op(0), resultSomaSub, overflowSomaSub);
      MULT: wallace8 port map(A, B, resultMult);
      RAIZ : sqrt port map(clk, reset, unsigned(std_logic_vector(A)), pronto, resultRaiz);
-     resultIncr <= A + "00000001";
-     resultDecr <= A - "00000001";
+     resultIncr <= A + sigOne;
+     resultDecr <= A - sigOne;
 
      S1 <= result1;
      S2 <= result2;
@@ -82,9 +82,9 @@ begin
      result2 <= resultMult(X+X-1 downto X) when Op = "1001" else zeros;            
      
      overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
-     overflowDecr <= '1' when (A = "11111111" and Op = "0100") else '0'; 
+     overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 
           
-     N <= '1' when (result1 < zeros and result2 < "00000001") else '0';
+     N <= '1' when (result1 < zeros and result2 < sigOne) else '0';
      Z <= '1' when (result1 = zeros and result2 = zeros) else '0';    
      O <= overflowSomaSub when (Op = "0001" or Op = "0010")
         else overflowIncr when Op = "0011"

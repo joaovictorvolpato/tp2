@@ -5,12 +5,12 @@ use ieee.numeric_std.all;
 ENTITY bc IS
 PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
 		opcode: IN STD_LOGIC_VECTOR(3 downto 0);
-      enPC, enA, enB, enOUT, pronto: OUT STD_LOGIC);
+      enPC, enA, enB, enOUT, enOP, pronto: OUT STD_LOGIC);
 END bc;
 
 
 ARCHITECTURE estrutura OF bc IS
-	TYPE state_type IS (S0, S1, S2, S3, S4, S5, S6);
+	TYPE state_type IS (S0, S1, S2, S3, S4, S5, S6, S7);
 	SIGNAL state: state_type;
 BEGIN
 	-- Parado S0
@@ -19,7 +19,8 @@ BEGIN
 	-- LerB S3
 	-- Operação S4
 	-- LerSaídaULA S5
-	-- Erro S6
+	-- OperaçãoPronta S6
+	-- Erro S7
 	
 	-- 0000 No operation
 	-- 0001 A + B
@@ -74,44 +75,103 @@ BEGIN
 						state <= S5; -- LerSaídaUla
 					end if;
 					if erroUla = '1' then
-						state <= S6; -- Erro
+						state <= S7; -- Erro
+					end if;
+				
+				-- LerSaídaUla
 				WHEN S5 => 
+					state <= S6; -- Instrução pronta
+
+				-- Instrução pronta
+				WHEN s6 =>
 					state <= S1; -- Ler próxima instrução
 					
 			END CASE;
 		END IF;
 	END PROCESS;
-	
-	-- Logica de saida
+
 	PROCESS (state)
 	BEGIN
 		CASE state IS
-			-- Estado para fazer nada
+			-- Estado Parado
 			WHEN S0 =>
-				ini <= '0';
-				loadOut <= '0';
-				loadIn <= '0'; -- cB = 0, cOp = 0
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
 			
-			-- Carregar registradores do BO
+			-- Ler Instrução
 			WHEN S1 =>
-				ini <= '1';
-				loadIn <= '1'; -- cB = 1, cOp = 1
+				enA <= '0';
+				enB <= '0';
+				enPC <= '1';
+				enOp <= '1';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '0';
 			
-			-- Estado durante calculo
+			-- Ler A
 			WHEN S2 =>
-				ini <= '0'; -- Já prepara para fazer a soma no S3
-				loadIn <= '0'; -- Para de carregador os registradores de entrada
-				loadOut <= '1'; -- Começa a carregar os registradores de saída
+				enA <= '1';
+				enB <= '0';
+				enPC <= '1';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '0';
 				
-			-- Estado de erro 
+			-- Ler B 
 			WHEN S3 =>
-				erro <= '1';
+				enA <= '0';
+				enB <= '1';
+				enPC <= '1';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '0';
 				
-			-- Estado de cálculo finalizado
+			-- Operação
 			WHEN S4 =>
-				pronto <= '1';
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '0';
+			
+			-- LerSaídaUla
+			WHEN S5 =>
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '1'; -- Ler a Ula
+				pronto <= '0';
+				erro <= '0';
+
+			-- InstruçãoPronta
+			WHEN S6 =>
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '1'; -- Falar pro usuário que a saída tá pronta
+				erro <= '0';
+
+			-- Erro
+			WHEN S7 =>
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '1';
 				
 		END CASE;
 	END PROCESS;

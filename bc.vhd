@@ -102,6 +102,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '0';
 			
 			-- Ler Instrução
 			WHEN S1 =>
@@ -112,6 +113,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '1';
 			
 			-- Ler A
 			WHEN S2 =>
@@ -122,6 +124,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '1';
 				
 			-- Ler B 
 			WHEN S3 =>
@@ -132,6 +135,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '1';
 				
 			-- Operação
 			WHEN S4 =>
@@ -142,6 +146,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '1';
 			
 			-- LerSaídaUla
 			WHEN S5 =>
@@ -152,6 +157,7 @@ BEGIN
 				enOUT <= '1'; -- Ler a Ula
 				pronto <= '0';
 				erro <= '0';
+				calculando <= '1';
 
 			-- InstruçãoPronta
 			WHEN S6 =>
@@ -162,6 +168,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '1'; -- Falar pro usuário que a saída tá pronta
 				erro <= '0';
+				calculando <= '0';
 
 			-- Erro
 			WHEN S7 =>
@@ -172,6 +179,7 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '1';
+				calculando <= '0';
 				
 		END CASE;
 	END PROCESS;

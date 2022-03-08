@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 ENTITY main IS
 
-GENERIC (X: INTEGER := 16);
+GENERIC (X: INTEGER := 8);
 PORT (reset, clk, inicio: IN STD_LOGIC;
 		pronto, erro: OUT STD_LOGIC;
       A, B : IN SIGNED(X-1 DOWNTO 0);

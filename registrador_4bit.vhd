@@ -2,13 +2,13 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.std_logic_unsigned.all;
 
-ENTITY registrador_2bit IS
+ENTITY registrador_4bit IS
 PORT (clk, carga : IN STD_LOGIC;
-	  d : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-	  q : OUT STD_LOGIC_VECTOR(1 DOWNTO 0));
-END registrador_2bit;
+	  d : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+	  q : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
+END registrador_4bit;
 
-ARCHITECTURE estrutura OF registrador_2bit IS
+ARCHITECTURE estrutura OF registrador_4bit IS
 BEGIN
 	PROCESS(clk)
 	BEGIN

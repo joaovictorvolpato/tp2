@@ -5,9 +5,9 @@ use ieee.signed_std.all;
 
 
 entity pc is
-generic(X := 3);
-    port (enable, reset, clk: in STD_LOGIC;
-        PC_COUNT: out STD_LOGIC_VECTOR(X-1 downto 0));
+generic(X :INTEGER := 3);
+port (enable, reset, clk: in STD_LOGIC;
+	PC_COUNT: out STD_LOGIC_VECTOR(X-1 downto 0));
 end pc;
 
 architecture arch of pc is
@@ -19,10 +19,9 @@ begin
         IF (reset = '1') THEN
             current_pc <= (others => '0');
         ELSIF (clk'EVENT AND clk = '1') THEN
-            CASE incremento is
-            WHEN enable = '1' => current_pc <= std_logic_vector(unsigned(current_pc) + 1);
-            WHEN OTHERS =>
-            END CASE;
+				IF (enable = '1') then 
+					current_pc <= std_logic_vector(unsigned(current_pc) + 1);
+				END IF;
         END IF;
     end PROCESS;
     

@@ -17,6 +17,7 @@ use ieee.numeric_std.all;
 
 
 entity ula is
+
 generic (X: natural := 8);
 
 port (A, B: in SIGNED(X-1 downto 0); -- entrada de valores
@@ -36,7 +37,7 @@ architecture arch of ula is
     signal resultAnd, resultOr, resultXor: SIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
 	signal reset, pronto: STD_LOGIC;
-	signal sigZeros, sigOne, sigOnes: STD_LOGIC(X-1 downto 0);
+	signal sigZeros, sigOne, sigOnes: STD_LOGIC_VECTOR(X-1 downto 0);
 
     
     component wallace8 is
@@ -61,9 +62,9 @@ architecture arch of ula is
     end component;
 
 begin
-     sigZeros <= (other => '0');
-     sigOnes <= (other => '1');
-     sigOne <= zeros + '1';
+     sigZeros <= (others => '0');
+     sigOnes <= (others => '1');
+     sigOne <= "00000000" + "00000001";
      SOMASUB: somasub8bits port map(A, B, Op(0), resultSomaSub, overflowSomaSub);
      MULT: wallace8 port map(A, B, resultMult);
      RAIZ : sqrt port map(clk, reset, unsigned(std_logic_vector(A)), pronto, resultRaiz);
@@ -84,8 +85,8 @@ begin
      overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
      overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 
           
-     N <= '1' when (result1 < zeros and result2 < sigOne) else '0';
-     Z <= '1' when (result1 = zeros and result2 = zeros) else '0';    
+     N <= '1' when (result1 < sigZeros and result2 < sigOne) else '0';
+     Z <= '1' when (result1 = sigZeros and result2 = sigZeros) else '0';    
      O <= overflowSomaSub when (Op = "0001" or Op = "0010")
         else overflowIncr when Op = "0011"
         else overflowDecr when Op = "0100"

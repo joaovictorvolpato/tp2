@@ -15,14 +15,14 @@ use ieee.numeric_std.all;
 	-- 1010 A raiz B
 	-- 1111 Halt
 
-ENTITY bc IS
+ENTITY fsmula IS
 PORT (clk, inicio, reset, prontoSqrt: IN STD_LOGIC;
       opcode: IN STD_LOGIC_VECTOR(3 downto 0);
       prontoUla, erroUla: OUT STD_LOGIC);
-END bc;
+END fsmula;
 
 
-ARCHITECTURE estrutura OF bc IS
+ARCHITECTURE estrutura OF fsmula IS
 	TYPE state_type IS (S0, S1, S2, S3);
 	SIGNAL state: state_type;
 BEGIN
@@ -56,7 +56,7 @@ BEGIN
                     						
 				-- Em pronto vai retornar para parado
 				WHEN S2 =>
-                    if reset = '1'; then
+                    if reset = '1' then
                         state <= S0;
                     end if;
 

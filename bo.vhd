@@ -4,10 +4,14 @@ USE ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 
 ENTITY bo IS
-GENERIC (X: INTEGER:= 8);
-GENERIC (SIZE_MEM:= 3);
-GENERIC (SIZE_WORD:= 8);
-GENERIC (SIZE_OP:= 3);
+
+generic(
+        X: INTEGER:= 8;
+        SIZE_MEM: INTEGER:= 3; 
+        SIZE_WORD: INTEGER:= 8; 
+		  SIZE_OP: INTERGER:= 3
+        );
+
 PORT (clk, enPC, enA, enB, enOp, enOut : IN STD_LOGIC;
 	 flagZ, flagO, flagN: OUT STD_LOGIC;
       S, PQ: OUT SIGNED(X-1 DOWNTO 0));

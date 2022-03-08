@@ -46,9 +46,8 @@ ARCHITECTURE estrutura OF bo IS
 			PC_COUNT: out STD_LOGIC_VECTOR(SIZE_MEM downto 0));
 	END COMPONENT;
 	
-	COMPONENT ram is 
-		PORT (clk: in STD_LOGIC;
-			address: in STD_LOGIC_VECTOR(SIZE_MEM downto 0);
+	COMPONENT rom is 
+		PORT (address: in STD_LOGIC_VECTOR(SIZE_MEM downto 0);
 			data: out STD_LOGIC_VECTOR(SIZE_WORD downto 0));
 	END COMPONENT;
 
@@ -68,7 +67,7 @@ ARCHITECTURE estrutura OF bo IS
 	
 BEGIN
 	PC: pc PORT MAP(enPC, reset, clk, PcCount);
-	RAM: ram PORT MAP(clk, PcCount, DadoLido);
+	ROM: rom PORT MAP(clk, PcCount, DadoLido);
 	ULA: ula PORT MAP(sairegA, sairegB, clk, reset, sairegOp, saiulaPQ, saiulaS, saiulaN, saiulaZ, saiulaO);
 
 	-- Regs entrada ULA

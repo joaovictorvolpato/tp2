@@ -7,29 +7,29 @@ ENTITY bo IS
 
 generic(
         X: INTEGER:= 8;
-        SIZE_MEM: INTEGER:= 3; 
-        SIZE_WORD: INTEGER:= 7; 
-		  SIZE_OP: INTEGER:= 3
+        SIZE_MEM: INTEGER:= 4; 
+        SIZE_WORD: INTEGER:= 8; 
+		  SIZE_OP: INTEGER:= 4
         );
 
 PORT (clk, enPC, enA, enB, enOp, enOut, reset : IN STD_LOGIC;
 	 flagZ, flagO, flagN: OUT STD_LOGIC;
-	 opcode: OUT STD_LOGIC_VECTOR(SIZE_OP-1 downto 0);
-      S, PQ: OUT SIGNED(X-1 DOWNTO 0));
+	 opcode: OUT UNSIGNED(SIZE_OP-1 downto 0);
+      S, PQ: OUT UNSIGNED(X-1 DOWNTO 0));
 END bo;
 
 ARCHITECTURE estrutura OF bo IS
 	
 	COMPONENT registrador IS
 	PORT (clk, carga : IN STD_LOGIC;
-		  d : IN STD_LOGIC_VECTOR(X-1 DOWNTO 0);
-		  q : OUT STD_LOGIC_VECTOR(X-1 DOWNTO 0));
+		  d : IN UNSIGNED(X-1 DOWNTO 0);
+		  q : OUT UNSIGNED(X-1 DOWNTO 0));
 	END COMPONENT;
 	
 	COMPONENT registrador_4bit IS
 	PORT (clk, carga : IN STD_LOGIC;
-		  d : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-		  q : OUT STD_LOGIC_VECTOR(3 DOWNTO 0));
+		  d : IN UNSIGNED(3 DOWNTO 0);
+		  q : OUT UNSIGNED(3 DOWNTO 0));
 	END COMPONENT;
 	
 	COMPONENT registrador_1bit IS
@@ -39,36 +39,36 @@ ARCHITECTURE estrutura OF bo IS
 	END COMPONENT;
 
 	COMPONENT ula is
-		PORT (A, B: in SIGNED(X-1 downto 0); 
+		PORT (A, B: in UNSIGNED(X-1 downto 0); 
 				clk, rst : in STD_LOGIC;
-				Op: in SIGNED(SIZE_OP downto 0); 
-				S1, S2: out SIGNED(X-1 downto 0); 
+				Op: in UNSIGNED(SIZE_OP-1 downto 0); 
+				S1, S2: out UNSIGNED(X-1 downto 0); 
 				N, Z, O: out STD_LOGIC); 
 		END COMPONENT;
 	
 	COMPONENT pc is
 		PORT (enable, reset, clk: in STD_LOGIC;
-			PC_COUNT: out STD_LOGIC_VECTOR(SIZE_MEM downto 0));
+			PcCount: out UNSIGNED(SIZE_MEM-1 downto 0));
 	END COMPONENT;
 	
 	COMPONENT rom is 
-		PORT (addr: in STD_LOGIC_VECTOR(SIZE_MEM downto 0);
-			data: out STD_LOGIC_VECTOR(SIZE_WORD downto 0));
+		PORT (addr: in UNSIGNED(SIZE_MEM-1 downto 0);
+			data: out UNSIGNED(SIZE_WORD-1 downto 0));
 	END COMPONENT;
 
 	-- Saídas do BO
 	SIGNAL sairegZ, sairegO, sairegN: STD_LOGIC;
-	SIGNAL sairegPQ, sairegS: SIGNED(X-1 downto 0);
+	SIGNAL sairegPQ, sairegS: UNSIGNED(X-1 downto 0);
 
 	-- Saídas Ula
-	SIGNAL saiulaPQ, saiulaS: SIGNED(X-1 downto 0);
+	SIGNAL saiulaPQ, saiulaS: UNSIGNED(X-1 downto 0);
 	SIGNAL saiulaO, saiulaZ, saiulaN: STD_LOGIC;
 	
 	-- Entradas da ULA
-	SIGNAL sairegA, sairegB: SIGNED (X-1 DOWNTO 0);
-	SIGNAL sairegOp: SIGNED(SIZE_OP DOWNTO 0);
-	SIGNAL DadoLido: STD_LOGIC_VECTOR(SIZE_WORD downto 0);
-	SIGNAL PcCount: STD_LOGIC_VECTOR(SIZE_MEM downto 0);
+	SIGNAL sairegA, sairegB: UNSIGNED (X-1 DOWNTO 0);
+	SIGNAL sairegOp: UNSIGNED(SIZE_OP-1 DOWNTO 0);
+	SIGNAL DadoLido: UNSIGNED(SIZE_WORD-1 downto 0);
+	SIGNAL PcCount: UNSIGNED(SIZE_MEM-1 downto 0);
 	
 BEGIN
 	PC1: pc PORT MAP(enPC, reset, clk, PcCount);
@@ -76,7 +76,7 @@ BEGIN
 	ULA1: ula PORT MAP(sairegA, sairegB, clk, reset, sairegOp, saiulaPQ, saiulaS, saiulaN, saiulaZ, saiulaO);
 
 	-- Regs entrada ULA
-	regOP: registrador_4bit PORT MAP (clk, enOP, DadoLido(SIZE_OP downto 0), sairegOp); 
+	regOP: registrador_4bit PORT MAP (clk, enOP, DadoLido(SIZE_OP-1 downto 0), sairegOp); 
 	regA: registrador PORT MAP (clk, enA, DadoLido, sairegA);
 	regB: registrador PORT MAP (clk, enB, DadoLido, sairegB);
 

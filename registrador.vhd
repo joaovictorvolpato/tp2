@@ -1,12 +1,12 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
-USE ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
 ENTITY registrador IS
 generic(X: INTEGER:= 8);
 PORT (clk, carga : IN STD_LOGIC;
-	  d : IN STD_LOGIC_VECTOR(X-1 DOWNTO 0);
-	  q : OUT STD_LOGIC_VECTOR(X-1 DOWNTO 0));
+	  d : IN UNSIGNED(X-1 DOWNTO 0);
+	  q : OUT UNSIGNED(X-1 DOWNTO 0));
 END registrador;
 
 ARCHITECTURE estrutura OF registrador IS

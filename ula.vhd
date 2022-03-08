@@ -20,35 +20,35 @@ entity ula is
 
 generic (X: natural := 8);
 
-port (A, B: in SIGNED(X-1 downto 0); -- entrada de valores
+port (A, B: in UNSIGNED(X-1 downto 0); -- entrada de valores
         clk, rst : in STD_LOGIC;
-        Op: in SIGNED(3 downto 0); -- operação escolhida 
-        S1, S2: out SIGNED(X-1 downto 0); -- resultados das operações
+        Op: in UNSIGNED(3 downto 0); -- operação escolhida 
+        S1, S2: out UNSIGNED(X-1 downto 0); -- resultados das operações
         N, Z, O: out STD_LOGIC); -- valor negativo, zero e overflow
 end ula;
 
 
 architecture arch of ula is
-	 signal result1, result2 : SIGNED (X-1 downto 0);
-    signal resultMult: SIGNED(X+X-1 downto 0);
+	 signal result1, result2 : UNSIGNED (X-1 downto 0);
+    signal resultMult: UNSIGNED(X+X-1 downto 0);
     signal resultRaiz: UNSIGNED(X/2-1 downto 0);
-    signal resultSomaSub: SIGNED(X-1 downto 0);
-    signal resultIncr, resultDecr : SIGNED(X-1 downto 0);
-    signal resultAnd, resultOr, resultXor: SIGNED(X-1 downto 0);
+    signal resultSomaSub: UNSIGNED(X-1 downto 0);
+    signal resultIncr, resultDecr : UNSIGNED(X-1 downto 0);
+    signal resultAnd, resultOr, resultXor: UNSIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
 	signal reset, pronto: STD_LOGIC;
-	signal sigZeros, sigOne, sigOnes: SIGNED(X-1 downto 0);
+	signal sigZeros, sigOne, sigOnes: UNSIGNED(X-1 downto 0);
     
     component wallace8 is
-        Port (A, B: in  SIGNED(X-1 downto 0);
-                prod: out  SIGNED(X+X-1 downto 0));
+        Port (A, B: in  UNSIGNED(X-1 downto 0);
+                prod: out  UNSIGNED(X+X-1 downto 0));
     end component;
     
 	-- 1 soma 0 sub
     component somasub8bits is
         Port (Op: in STD_LOGIC;
-					A, B: in  SIGNED(X-1 downto 0);
-               S: out  SIGNED(X-1 downto 0);
+					A, B: in  UNSIGNED(X-1 downto 0);
+               S: out  UNSIGNED(X-1 downto 0);
 					OVF: out STD_LOGIC);
     end component;
 
@@ -57,10 +57,11 @@ architecture arch of ula is
     component raizquadrada is
         Port (
             clk, rst : in STD_LOGIC;
-            entrada : in unsigned(X-1 downto 0);
-            pronto : out STD_LOGIC; 
-            resultado : out unsigned(X/2-1 downto 0));
+            input : in UNSIGNED(X-1 downto 0);
+            done : out STD_LOGIC; 
+            sq_root : out UNSIGNED(X/2-1 downto 0));
     end component;
+	 
 	 
 begin
      sigZeros <= (others => '0');
@@ -68,7 +69,7 @@ begin
      sigOne <= sigZeros + "00000001";
      SOMASUB: somasub8bits port map(Op(0), A, B, resultSomaSub, overflowSomaSub);
      MULT: wallace8 port map(A, B, resultMult);
-     RAIZ : raizquadrada port map(clk, reset, unsigned(std_logic_vector(A)), pronto, resultRaiz);
+     RAIZ : raizquadrada port map(clk, reset, A, pronto, resultRaiz);
      resultIncr <= A + sigOne;
      resultDecr <= A - sigOne;
 

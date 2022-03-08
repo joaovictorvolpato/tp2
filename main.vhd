@@ -11,9 +11,9 @@ GENERIC(
 
 PORT (reset, clk, inicio: IN STD_LOGIC;
 		pronto, erro, calculando: OUT STD_LOGIC;
-      A, B : IN SIGNED(X-1 DOWNTO 0);
-		Op : IN SIGNED(1 DOWNTO 0);
-      Saida1, Saida2 : OUT SIGNED(X-1 DOWNTO 0);
+      A, B : IN UNSIGNED(X-1 DOWNTO 0);
+		Op : IN UNSIGNED(1 DOWNTO 0);
+      Saida1, Saida2 : OUT UNSIGNED(X-1 DOWNTO 0);
 		O, Z, N: OUT STD_LOGIC);
 END main;
 
@@ -23,7 +23,7 @@ ARCHITECTURE estrutura OF main IS
 	
 	COMPONENT bc IS
 	PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
-			opcode: IN STD_LOGIC_VECTOR(3 downto 0);
+			opcode: IN UNSIGNED(3 downto 0);
 			enPC, enA, enB, enOUT, enOP, pronto, erro, calculando: OUT STD_LOGIC);
 	END COMPONENT;
 
@@ -32,17 +32,17 @@ ARCHITECTURE estrutura OF main IS
 	COMPONENT bo IS
 	PORT (clk, enPC, enA, enB, enOp, enOut, reset : IN STD_LOGIC;
 	 flagZ, flagO, flagN: OUT STD_LOGIC;
-	 opcode: IN STD_LOGIC_VECTOR(SIZE_OP-1 downto 0);
-      S, PQ: OUT SIGNED(X-1 DOWNTO 0));
+	 opcode: OUT UNSIGNED(SIZE_OP-1 downto 0);
+      S, PQ: OUT UNSIGNED(X-1 DOWNTO 0));
 	END COMPONENT;
 
 	
 	
 	SIGNAL flagZ, flagO, flagN: STD_LOGIC;
-	SIGNAL result1, result2: SIGNED(X-1 DOWNTO 0);
+	SIGNAL result1, result2: UNSIGNED(X-1 DOWNTO 0);
 	SIGNAL prontoUla, erroUla: STD_LOGIC;
 	SIGNAL enA, enB, enOUT, enOP, enPC: STD_LOGIC;
-	SIGNAL opcode: STD_LOGIC_VECTOR(SIZE_OP-1 DOWNTO 0);
+	SIGNAL opcode: UNSIGNED(SIZE_OP-1 DOWNTO 0);
 	
 	BEGIN
 	Saida1 <= result1;

@@ -1,11 +1,13 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use ieee.numeric_std.all;
+
 
 entity wallace8 is
-	Port ( A : in  STD_LOGIC_VECTOR (7 downto 0);
-           B : in  STD_LOGIC_VECTOR (7 downto 0);
-           prod : out  STD_LOGIC_VECTOR (15 downto 0));
+	Port ( A : in  UNSIGNED (7 downto 0);
+           B : in  UNSIGNED (7 downto 0);
+           prod : out  UNSIGNED (15 downto 0));
 end wallace8;
 
 architecture arch of wallace8 is
@@ -25,7 +27,7 @@ component half_adder is
            cout : out  STD_LOGIC);
 end component;
 
-signal p0, p1, p2, p3, p4, p5, p6, p7:STD_LOGIC_VECTOR (7 downto 0);
+signal p0, p1, p2, p3, p4, p5, p6, p7:UNSIGNED (7 downto 0);
 signal k01,k02,k03,k04,k05,k06,k07,k08,k09,k10,k11,k12,k13,k14,k15,k16,k17,k18,k19,k20,k21,k22,k23,k24,k25,k26,k27,k28,k29,k30,k31,k32,k33,k34,k35,k36,k37,k38,k39,k40,k41,k42,k43,k44,k45,k46,k47,k48,k49,k50,k51,k52,k53,k54,k55,k56,k57,k58,k59,k60,k61,k62,k63,k64,k65,k66,k67,k68:std_logic;
 signal c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c60,c61,c62,c63,c64,c65,c66,c67,c68:std_logic;
 begin

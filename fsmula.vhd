@@ -17,7 +17,7 @@ use ieee.numeric_std.all;
 
 ENTITY fsmula IS
 PORT (clk, inicio, reset, prontoSqrt: IN STD_LOGIC;
-      opcode: IN STD_LOGIC_VECTOR(3 downto 0);
+      opcode: IN UNSIGNED(3 downto 0);
       prontoUla, erroUla: OUT STD_LOGIC);
 END fsmula;
 

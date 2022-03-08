@@ -23,14 +23,14 @@ entity ROM is
         data_width : integer := 8 -- each element has 7-bits
         );
 port(
-    addr : in STD_LOGIC_VECTOR(addr_bits-1 downto 0);
-    data : out STD_LOGIC_VECTOR(data_width-1 downto 0)
+    addr : in UNSIGNED(addr_bits-1 downto 0);
+    data : out UNSIGNED(data_width-1 downto 0)
 );
 end ROM;
 
 architecture ROMarch of ROM is
 
-    type rom_type is array (0 to addr_width-1) of std_logic_vector(data_width-1 downto 0);
+    type rom_type is array (0 to addr_width-1) of UNSIGNED(data_width-1 downto 0);
     
     signal ROM1 : rom_type := (
                             "00000001", -- OPCODE: 0001 - A + B 

@@ -3,8 +3,8 @@ use IEEE.Std_Logic_1164.all;
 use ieee.numeric_std.all;
 
 entity adder16 is
-port (A,B: in SIGNED(15 downto 0);
-    S: out SIGNED(15 downto 0);
+port (A,B: in UNSIGNED(15 downto 0);
+    S: out UNSIGNED(15 downto 0);
     overflow: out std_logic);
 end adder16;
 

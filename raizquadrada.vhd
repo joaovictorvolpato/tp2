@@ -3,8 +3,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity sqrt is
-    generic(N : integer := 32);
+entity raizquadrada is
+    generic(N : integer := 8);
     port (
         Clk : in std_logic;     --Clock
         rst : in std_logic;     --Asynchronous active high reset.
@@ -12,9 +12,9 @@ entity sqrt is
         done : out std_logic;   --This signal goes high when output is ready
         sq_root : out unsigned(N/2-1 downto 0)  --square root of 'input'
     );
-end sqrt;
+end raizquadrada;
 
-architecture Behav of sqrt is
+architecture Behav of raizquadrada is
 
 begin
 

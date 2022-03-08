@@ -4,12 +4,17 @@ use ieee.numeric_std.all;
 
 ENTITY main IS
 
-GENERIC (X: INTEGER := 8);
+
+GENERIC(
+        X: INTEGER:= 8;
+		  SIZE_OP: INTEGER:= 4);
+
 PORT (reset, clk, inicio: IN STD_LOGIC;
-		pronto, erro: OUT STD_LOGIC;
+		pronto, erro, calculando: OUT STD_LOGIC;
       A, B : IN SIGNED(X-1 DOWNTO 0);
 		Op : IN SIGNED(1 DOWNTO 0);
-      Saida1, Saida2 : OUT SIGNED(X-1 DOWNTO 0));
+      Saida1, Saida2 : OUT SIGNED(X-1 DOWNTO 0);
+		O, Z, N: OUT STD_LOGIC);
 END main;
 
 ARCHITECTURE estrutura OF main IS
@@ -17,29 +22,37 @@ ARCHITECTURE estrutura OF main IS
 	SIGNAL state: state_type;
 	
 	COMPONENT bc IS
-	PORT (reset, clk, inicio, flagO: IN STD_LOGIC;
-		pronto : OUT STD_LOGIC;
-      ini, loadIn, loadOut, erro: OUT STD_LOGIC);
+	PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
+			opcode: IN STD_LOGIC_VECTOR(3 downto 0);
+			enPC, enA, enB, enOUT, enOP, pronto, erro, calculando: OUT STD_LOGIC);
 	END COMPONENT;
-	
+
+
 	
 	COMPONENT bo IS
-	PORT (clk, loadIn, loadOut : IN STD_LOGIC;
-      entA, entB : IN SIGNED(X-1 DOWNTO 0);
-		Op: IN SIGNED(1 downto 0);
-		flagZ, flagO, flagN: OUT STD_LOGIC;
-      result1, result2: OUT SIGNED(X-1 DOWNTO 0));
+	PORT (clk, enPC, enA, enB, enOp, enOut, reset : IN STD_LOGIC;
+	 flagZ, flagO, flagN: OUT STD_LOGIC;
+	 opcode: IN STD_LOGIC_VECTOR(SIZE_OP-1 downto 0);
+      S, PQ: OUT SIGNED(X-1 DOWNTO 0));
 	END COMPONENT;
-	
-	SIGNAL ini, loadIn, loadOut, flagZ, flagO, flagN, erroBc: STD_LOGIC;
-	SIGNAL result1, result2: SIGNED(X-1 DOWNTO 0);
 
+	
+	
+	SIGNAL flagZ, flagO, flagN: STD_LOGIC;
+	SIGNAL result1, result2: SIGNED(X-1 DOWNTO 0);
+	SIGNAL prontoUla, erroUla: STD_LOGIC;
+	SIGNAL enA, enB, enOUT, enOP, enPC: STD_LOGIC;
+	SIGNAL opcode: STD_LOGIC_VECTOR(SIZE_OP-1 DOWNTO 0);
+	
 	BEGIN
-	erro <= erroBc;
 	Saida1 <= result1;
 	Saida2 <= result2;
+	Z <= flagZ;
+	N <= flagN;
+	O <= flagO;
 	
-	CONTROLE: bc PORT MAP(reset, clk, inicio, flagO, pronto, ini, loadIn, loadOut, erroBc);
-	OPERATIVO: bo PORT MAP(clk, loadIn, loadOut, A, B, Op, flagZ, flagO, flagN, result1, result2);
+	CONTROLE: bc PORT MAP(reset, clk, inicio, prontoUla, erroUla, opcode, enPC, enA, enB, enOUT, enOP,
+								pronto, erro, calculando);
+	OPERATIVO: bo PORT MAP(clk, enPC, enA, enB, enOp, enOUT, reset, flagZ, flagO, flagN, opcode, result1, result2);
 
 END estrutura;

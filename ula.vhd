@@ -37,8 +37,7 @@ architecture arch of ula is
     signal resultAnd, resultOr, resultXor: SIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
 	signal reset, pronto: STD_LOGIC;
-	signal sigZeros, sigOne, sigOnes: STD_LOGIC_VECTOR(X-1 downto 0);
-
+	signal sigZeros, sigOne, sigOnes: SIGNED(X-1 downto 0);
     
     component wallace8 is
         Port (A, B: in  SIGNED(X-1 downto 0);
@@ -47,40 +46,42 @@ architecture arch of ula is
     
 	-- 1 soma 0 sub
     component somasub8bits is
-        Port (A, B: in  SIGNED(X-1 downto 0);
-					Op: in STD_LOGIC;
-               result: out  SIGNED(X-1 downto 0);
-					overflow: out STD_LOGIC);
+        Port (Op: in STD_LOGIC;
+					A, B: in  SIGNED(X-1 downto 0);
+               S: out  SIGNED(X-1 downto 0);
+					OVF: out STD_LOGIC);
     end component;
 
-    component sqrt is
+
+	 
+    component raizquadrada is
         Port (
-            Clk, rst : in STD_LOGIC;
+            clk, rst : in STD_LOGIC;
             entrada : in unsigned(X-1 downto 0);
             pronto : out STD_LOGIC; 
             resultado : out unsigned(X/2-1 downto 0));
     end component;
-
+	 
 begin
      sigZeros <= (others => '0');
      sigOnes <= (others => '1');
-     sigOne <= "00000000" + "00000001";
-     SOMASUB: somasub8bits port map(A, B, Op(0), resultSomaSub, overflowSomaSub);
+     sigOne <= sigZeros + "00000001";
+     SOMASUB: somasub8bits port map(Op(0), A, B, resultSomaSub, overflowSomaSub);
      MULT: wallace8 port map(A, B, resultMult);
-     RAIZ : sqrt port map(clk, reset, unsigned(std_logic_vector(A)), pronto, resultRaiz);
+     RAIZ : raizquadrada port map(clk, reset, unsigned(std_logic_vector(A)), pronto, resultRaiz);
      resultIncr <= A + sigOne;
      resultDecr <= A - sigOne;
 
-     S1 <= result1;
+     S1 <= result1; 
      S2 <= result2;
      
      -- Manda o resultado selecionado para a saída
      result1 <= resultSomaSub when (Op = "0001" or Op = "0010") else
                 resultIncr when Op = "0011" else
                 resultDecr when Op = "0100" else
-                resultMult(X-1 downto 0) when Op = "1001" else zeros;
+                resultMult(X-1 downto 0) when Op = "1001" else sigZeros;
                     
-     result2 <= resultMult(X+X-1 downto X) when Op = "1001" else zeros;            
+     result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
      
      overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
      overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 

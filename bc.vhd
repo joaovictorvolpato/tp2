@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 ENTITY bc IS
 PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
 		opcode: IN STD_LOGIC_VECTOR(3 downto 0);
-      enPC, enA, enB, enOUT, enOP, pronto: OUT STD_LOGIC);
+      enPC, enA, enB, enOUT, enOP, pronto, erro, calculando: OUT STD_LOGIC);
 END bc;
 
 
@@ -82,10 +82,16 @@ BEGIN
 				WHEN S5 => 
 					state <= S6; -- Instrução pronta
 
+				
 				-- Instrução pronta
-				WHEN s6 =>
+				WHEN S6 =>
 					state <= S1; -- Ler próxima instrução
-					
+				
+				WHEN S7 =>
+					IF reset = '1' THEN
+						state <= S0;
+					END IF;
+				
 			END CASE;
 		END IF;
 	END PROCESS;

@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.Std_Logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.signed_std.all;
 
 
 entity pc is

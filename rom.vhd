@@ -23,8 +23,8 @@ entity ROM is
         data_width : integer := 8 -- each element has 7-bits
         );
 port(
-    addr : in SIGNED(addr_bits-1 downto 0);
-    data : out SIGNED(data_width-1 downto 0)
+    addr : in STD_LOGIC_VECTOR(addr_bits-1 downto 0);
+    data : out STD_LOGIC_VECTOR(data_width-1 downto 0)
 );
 end ROM;
 

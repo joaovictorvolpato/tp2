@@ -32,7 +32,7 @@ architecture ROMarch of ROM is
 
     type rom_type is array (0 to addr_width-1) of std_logic_vector(data_width-1 downto 0);
     
-    signal sevenSegment_ROM : rom_type := (
+    signal _ROM : rom_type := (
                             "00000001", -- OPCODE: 0001 - A + B 
                             "00110010", -- VALOR DE A
                             "00001100", -- VALOR DE B
@@ -52,5 +52,5 @@ architecture ROMarch of ROM is
 									 
         );
 begin
-    data <= sevenSegment_ROM(to_integer(unsigned(addr)));
-end arch;
+    data <= _ROM(to_integer(unsigned(addr)));
+end ROMarch;

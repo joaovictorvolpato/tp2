@@ -67,7 +67,7 @@ ARCHITECTURE estrutura OF bo IS
 	
 BEGIN
 	PC: pc PORT MAP(enPC, reset, clk, PcCount);
-	ROM: rom PORT MAP(clk, PcCount, DadoLido);
+	ROM1: rom PORT MAP(PcCount, DadoLido);
 	ULA: ula PORT MAP(sairegA, sairegB, clk, reset, sairegOp, saiulaPQ, saiulaS, saiulaN, saiulaZ, saiulaO);
 
 	-- Regs entrada ULA

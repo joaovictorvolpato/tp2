@@ -12,8 +12,8 @@ generic(
 		  SIZE_OP: INTEGER:= 4
         );
 
-PORT (clk, reset, inicio, enPC, enA, enB, enOp, enOut, iniciarCalculo: IN STD_LOGIC;
-	 flagZ, flagO, flagN, prontoUla, prontoSqrt, erroULA: OUT STD_LOGIC;
+PORT (clk, reset, iniciarUla, enPC, enA, enB, enOp, enOut: IN STD_LOGIC;
+	 flagN, flagZ, flagO, prontoUla, erroULA: OUT STD_LOGIC;
 	 opcodeOut: OUT UNSIGNED(SIZE_OP-1 downto 0);
     S, PQ: OUT UNSIGNED(X-1 DOWNTO 0);
 	 A, B: OUT UNSIGNED(X-1 DOWNTO 0)
@@ -41,12 +41,12 @@ ARCHITECTURE estrutura OF bo IS
 	END COMPONENT;
 	
 	COMPONENT mainula IS
-	PORT (reset, clk, iniciarCalculo: IN STD_LOGIC;
-		pronto, prontoSqrtSaida, erro: OUT STD_LOGIC;
+	PORT (reset, clk, inicio: IN STD_LOGIC;
+		pronto, erro: OUT STD_LOGIC;
 		A, B : IN UNSIGNED(X-1 DOWNTO 0);
 		Op: IN UNSIGNED(SIZE_OP-1 downto 0);
 		Saida1, Saida2 : OUT UNSIGNED(X-1 DOWNTO 0);
-		O, Z, N: OUT STD_LOGIC);
+		N, Z, O: OUT STD_LOGIC);
 	END COMPONENT;
 
 	COMPONENT pc is
@@ -76,7 +76,7 @@ ARCHITECTURE estrutura OF bo IS
 BEGIN
 	PC1: pc PORT MAP(enPC, reset, clk, PcCount);
 	ROM1: rom PORT MAP(PcCount, DadoLido);
-	ULA1: mainula PORT MAP(reset, clk, iniciarCalculo, prontoUla, prontoSqrt, erroULA, sairegA, sairegB, sairegOp, saiulaS, saiulaPQ, saiulaN, saiulaZ, saiulaO);
+	ULA1: mainula PORT MAP(reset, clk, iniciarUla, prontoUla, erroULA, sairegA, sairegB, sairegOp, saiulaS, saiulaPQ, saiulaN, saiulaZ, saiulaO);
 
 	-- Regs entrada ULA
 	regOP: registrador_4bit PORT MAP (clk, enOP, DadoLido(SIZE_OP-1 downto 0), sairegOp); 

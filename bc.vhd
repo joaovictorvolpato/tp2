@@ -5,8 +5,7 @@ use ieee.numeric_std.all;
 ENTITY bc IS
 PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
 		opcode: IN UNSIGNED(3 downto 0);
-		estado: OUT STD_LOGIC_VECTOR(2 downto 0);
-      enPC, enA, enB, enOUT, enOP, pronto, erro, calculando, iniciarCalculo: OUT STD_LOGIC);
+      enPC, enA, enB, enOUT, enOP, pronto, erro, iniciarUla: OUT STD_LOGIC);
 END bc;
 
 
@@ -111,9 +110,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '0';
 				estado <= "000";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 			
 			-- Ler Instrução
 			WHEN S1 =>
@@ -124,9 +122,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '1';
 				estado <= "001";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 			
 			-- Ler A
 			WHEN S2 =>
@@ -137,9 +134,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '1';
 				estado <= "010";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 				
 			-- Ler B 
 			WHEN S3 =>
@@ -150,9 +146,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '1';
 				estado <= "011";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 				
 			-- Operação
 			WHEN S4 =>
@@ -163,9 +158,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '1';
 				estado <= "100";
-				iniciarCalculo <= '1';
+				iniciarUla <= '1';
 			
 			-- LerSaídaUla
 			WHEN S5 =>
@@ -176,9 +170,8 @@ BEGIN
 				enOUT <= '1'; -- Ler a Ula
 				pronto <= '0';
 				erro <= '0';
-				calculando <= '1';
 				estado <= "101";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 				
 			-- InstruçãoPronta
 			WHEN S6 =>
@@ -189,9 +182,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '1'; -- Falar pro usuário que a saída tá pronta
 				erro <= '0';
-				calculando <= '0';
 				estado <= "110";
-				iniciarCalculo <= '0';
+				iniciarUla <= '0';
 				
 			-- Erro
 			WHEN S7 =>
@@ -202,8 +194,8 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '1';
-				calculando <= '0';
 				estado <= "111";
+				iniciarUla <= '0';
 				
 		END CASE;
 	END PROCESS;

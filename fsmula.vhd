@@ -2,7 +2,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-	-- 0000 No operation
+	-- 0000 Nada
 	-- 0001 A + B
 	-- 0010 A - B
 	-- 0011 A++
@@ -13,12 +13,13 @@ use ieee.numeric_std.all;
 	-- 1000 (A xor B) bit a bit
 	-- 1001 A * B
 	-- 1010 A raiz B
+	-- 1110 No operation
 	-- 1111 Halt
 
 ENTITY fsmula IS
-PORT (clk, iniciarCalculo, reset, prontoSqrt: IN STD_LOGIC;
+PORT (clk, inicio, reset, prontoSqrt: IN STD_LOGIC;
       opcode: IN UNSIGNED(3 downto 0);
-      prontoUla, erroUla, iniciar_calculos, reset_calculos: OUT STD_LOGIC);
+      prontoUla, erroUla, iniciar_ula, reset_ula: OUT STD_LOGIC);
 END fsmula;
 
 
@@ -40,7 +41,7 @@ BEGIN
 			CASE state IS
 				WHEN S0 =>
 					-- Se inicio, passa para o calculo
-					if iniciarCalculo = '1' then
+					if inicio = '1' then
 						state <= S1;
 					end if;
 				
@@ -78,36 +79,36 @@ BEGIN
 			WHEN S0 =>
 				prontoUla <= '0';
 				erroUla <= '0';
-				iniciar_calculos <= '0';
-				reset_calculos <= '0';
+				iniciar_ula <= '0';
+				reset_ula <= '0';
 
 			-- Estado Reset
 			WHEN S1 =>
 				prontoUla <= '0';
 				erroUla <= '0';
-				iniciar_calculos <= '0';
-				reset_calculos <= '1';
+				iniciar_ula <= '0';
+				reset_ula <= '1';
 				
 			-- Calculo
 			WHEN S2 =>
 				 prontoUla <= '0';
 				 erroUla <= '0';
-				 iniciar_calculos <= '1';
-				 reset_calculos <= '0';
+				 iniciar_ula <= '1';
+				 reset_ula <= '0';
 			
 			-- Pronto
 			WHEN S3 =>
 				 prontoUla <= '1';
 				 erroUla <= '0';
-				 iniciar_calculos <= '0';
-				 reset_calculos <= '0';
+				 iniciar_ula <= '0';
+				 reset_ula <= '0';
 				
 			-- Erro
 			WHEN S4 =>
 				 prontoUla <= '0';
 				 erroUla <= '1';
-				 iniciar_calculos <= '0';
-				 reset_calculos <= '0';
+				 iniciar_ula <= '0';
+				 reset_ula <= '0';
 				
 		END CASE;
 	END PROCESS;

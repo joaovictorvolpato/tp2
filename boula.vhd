@@ -31,7 +31,7 @@ architecture arch of boula is
 	 signal result1, result2 : UNSIGNED (X-1 downto 0);
     signal resultMult: UNSIGNED(X+X-1 downto 0);
     signal resultRaiz: UNSIGNED(X/2-1 downto 0);
-	 signal resultRaiz8Bits: UNSIGNED(X-1 downto 0);
+	 signal result_And, result_Or, result_Xor: UNSIGNED(X-1 downto 0);
     signal resultIncr, resultDecr : UNSIGNED(X-1 downto 0);
     signal resultAnd, resultOr, resultXor: UNSIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
@@ -40,6 +40,22 @@ architecture arch of boula is
 	
 	 signal signedA, signedB, resultSomaSub: SIGNED(X-1 downto 0);
     signal unsignedSomaSub: UNSIGNED(X-1 downto 0);
+	 
+	COMPONENT bitabit_or is
+	port(A, B: in unsigned(X-1 downto 0);
+		 S: out unsigned(X-1 downto 0));
+	end COMPONENT;
+
+
+	COMPONENT bitabit_xor is
+	port(A, B: in unsigned(X-1 downto 0);
+		 S: out unsigned(X-1 downto 0));
+	end COMPONENT;
+	 
+	COMPONENT bitabit_and IS
+	port(A, B: in unsigned(X-1 downto 0);
+		 S: out unsigned(X-1 downto 0));
+	end COMPONENT;
 	 
     component wallace8 is
         Port (A, B: in  UNSIGNED(X-1 downto 0);
@@ -63,20 +79,25 @@ architecture arch of boula is
     end component;
 	 
 begin
+	-- Type Cast
 	signedA <= signed(A);
 	signedB <= signed(B);
 	unsignedSomaSub <= unsigned(resultSomaSub);
-	resultRaiz8Bits(X/2-1 downto 0) <= resultRaiz;
 	
     -- Sinais 
     sigZeros <= (others => '0');
     sigOnes <= (others => '1');
     sigOne <= sigZeros + "00000001";
+	 prontoSqrt <= prontoRaiz;
+	 
     -- Operações ULA
     SOMASUB: somasub8bits port map(Op(0), signedA, signedB, resultSomaSub, overflowSomaSub);
     MULT: wallace8 port map(A, B, resultMult);
     RAIZ : raizquadrada port map(clk, rst, iniciar_calculos, A, prontoRaiz, resultRaiz);
-    resultIncr <= A + sigOne;
+    BIT_AND : bitabit_and port map(A, B, result_And);
+	 BIT_OR : bitabit_or port map(A, B, result_Or);
+	 BIT_XOR : bitabit_xor port map(A, B, result_Xor);
+	 resultIncr <= A + sigOne;
     resultDecr <= A - sigOne;
      
      -- Manda o resultado selecionado para a saída
@@ -85,18 +106,22 @@ begin
                 resultDecr when Op = "0100" else
                 resultMult(X-1 downto 0) when Op = "1001" else 
 					 "0000" & resultRaiz when Op = "1010" else
-					 sigZeros;
-                    
-    result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
-     
-    overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
-    overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 
-
+					 not(A) when Op = "0101" else
+					 result_And when Op = "0110" else
+					 result_Xor when Op = "1000" else
+					 result_Or when Op = "0111" else
+					 sigZeros;                   	
+	 result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
     S1 <= result1; 
-    S2 <= result2;
-    prontoSqrt <= prontoRaiz;
+    S2 <= result2; 
+	  
+	  
+	 -- Overflow Incremento e Decremento
+    overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
+    overflowDecr <= '1' when (A = "10000000" and Op = "0100") else '0'; 
 
-    N <= '1' when (result1 < sigZeros and result2 < sigZeros) else '0';
+	 -- Flags
+    N <= '1' when result1(X-1) = '1' else '0';
     Z <= '1' when (result1 = sigZeros and result2 = sigZeros) else '0';    
     O <= overflowSomaSub when (Op = "0001" or Op = "0010")
         else overflowIncr when Op = "0011"

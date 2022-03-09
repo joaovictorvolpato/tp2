@@ -7,7 +7,7 @@ entity raizquadrada is
     generic(N : integer := 8);
     port (
         Clk : in std_logic;     --Clock
-        rst : in std_logic;     --Asynchronous active high reset.
+        rst, ini : in std_logic;     --Asynchronous active high reset.
         input : in unsigned(N-1 downto 0);  --this is the number for which we want to find square root.
         done : out std_logic;   --This signal goes high when output is ready
         sq_root : out unsigned(N/2-1 downto 0)  --square root of 'input'
@@ -18,7 +18,7 @@ architecture Behav of raizquadrada is
 
 begin
 
-    SQROOT_PROC : process(Clk,rst)
+    SQROOT_PROC : process(Clk,rst, ini)
         variable a : unsigned(N-1 downto 0);  --original input.
         variable left,right,r : unsigned(N/2+1 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
         variable q : unsigned(N/2-1 downto 0) := (others => '0');  --result.
@@ -33,7 +33,8 @@ begin
             right := (others => '0');
             r := (others => '0');
             q := (others => '0');
-        elsif(rising_edge(Clk)) then
+        
+		  elsif (clk'EVENT AND clk = '1' AND ini = '1') THEN
             --Before we start the first clock cycle get the 'input' to the variable 'a'.
             if(i = 0) then  
                 a := input;

@@ -33,21 +33,21 @@ architecture ROMarch of ROM is
     type rom_type is array (0 to addr_width-1) of UNSIGNED(data_width-1 downto 0);
     
     signal ROM1 : rom_type := (
-                            "00000001", -- OPCODE: 0001 - A + B 
-                            "00110010", -- VALOR DE A
-                            "00001100", -- VALOR DE B
-                            "00000011", -- OPCODE: 0011 - A ++
-                            "00011110", -- VALOR DE A
-                            "00001001", -- OPCODE: 1001 - A * B
-                            "00110010", -- VALOR DE A
-                            "00001100", -- VALOR DE B
+                            "00001010", -- OPCODE: 1010 - SQRT(A) 
+                            "00110010", -- VALOR DE A - 50
                             "00001010", -- OPCODE: 1010 - SQRT(A)
-                            "11000100", -- VALOR DE A
+                            "00010000", -- VALOR DE A - 16
+                            "00001010", -- OPCODE: 1010 - SQRT(A)
+                            "00001001", -- VALOR DE A - 9
+                            "00001010", -- OPCODE: 1010 - SQRT(A)
+                            "01000000", -- VALOR DE A - 64
                             "00000010", -- OPCODE: 0010 - A - B
-                            "00110010", -- VALOR DE A
-                            "00001100", -- VALOR DE B
+                            "00001000", -- VALOR DE A - 8
+                            "00000100", -- VALOR DE B - 4
                             "00000100", -- OPCODE: 0100 - A--
-                            "00110010", -- VALOR DE A
+                            "00110010", -- VALOR DE A - 50
+								    "00000100", -- OPCODE: 0100 - A--
+                            "10000000", -- VALOR DE A - 50
                             "00001111"  -- OPCODE: 1111 - HALT+
 									 
         );

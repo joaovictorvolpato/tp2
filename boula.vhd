@@ -20,7 +20,7 @@ entity boula is
 generic (X: natural := 8);
 
 port (A, B: in UNSIGNED(X-1 downto 0); -- entrada de valores
-        clk, rst : in STD_LOGIC;
+        clk, rst, iniciar_calculos: in STD_LOGIC;
         Op: in UNSIGNED(3 downto 0); -- operação escolhida 
         S1, S2: out UNSIGNED(X-1 downto 0); -- resultados das operações
         N, Z, O, prontoSqrt: out STD_LOGIC); -- valor negativo, zero e overflow
@@ -31,6 +31,7 @@ architecture arch of boula is
 	 signal result1, result2 : UNSIGNED (X-1 downto 0);
     signal resultMult: UNSIGNED(X+X-1 downto 0);
     signal resultRaiz: UNSIGNED(X/2-1 downto 0);
+	 signal resultRaiz8Bits: UNSIGNED(X-1 downto 0);
     signal resultIncr, resultDecr : UNSIGNED(X-1 downto 0);
     signal resultAnd, resultOr, resultXor: UNSIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
@@ -55,7 +56,7 @@ architecture arch of boula is
 
     component raizquadrada is
         Port (
-            clk, rst : in STD_LOGIC;
+            clk, rst, ini : in STD_LOGIC;
             input : in UNSIGNED(X-1 downto 0);
             done : out STD_LOGIC; 
             sq_root : out UNSIGNED(X/2-1 downto 0));
@@ -65,7 +66,8 @@ begin
 	signedA <= signed(A);
 	signedB <= signed(B);
 	unsignedSomaSub <= unsigned(resultSomaSub);
-
+	resultRaiz8Bits(X/2-1 downto 0) <= resultRaiz;
+	
     -- Sinais 
     sigZeros <= (others => '0');
     sigOnes <= (others => '1');
@@ -73,7 +75,7 @@ begin
     -- Operações ULA
     SOMASUB: somasub8bits port map(Op(0), signedA, signedB, resultSomaSub, overflowSomaSub);
     MULT: wallace8 port map(A, B, resultMult);
-    RAIZ : raizquadrada port map(clk, rst, A, prontoRaiz, resultRaiz);
+    RAIZ : raizquadrada port map(clk, rst, iniciar_calculos, A, prontoRaiz, resultRaiz);
     resultIncr <= A + sigOne;
     resultDecr <= A - sigOne;
      
@@ -81,7 +83,9 @@ begin
     result1 <= unsignedSomaSub when (Op = "0001" or Op = "0010") else
                 resultIncr when Op = "0011" else
                 resultDecr when Op = "0100" else
-                resultMult(X-1 downto 0) when Op = "1001" else sigZeros;
+                resultMult(X-1 downto 0) when Op = "1001" else 
+					 "0000" & resultRaiz when Op = "1010" else
+					 sigZeros;
                     
     result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
      
@@ -92,7 +96,7 @@ begin
     S2 <= result2;
     prontoSqrt <= prontoRaiz;
 
-    N <= '1' when (result1 < sigZeros and result2 < sigOne) else '0';
+    N <= '1' when (result1 < sigZeros and result2 < sigZeros) else '0';
     Z <= '1' when (result1 = sigZeros and result2 = sigZeros) else '0';    
     O <= overflowSomaSub when (Op = "0001" or Op = "0010")
         else overflowIncr when Op = "0011"

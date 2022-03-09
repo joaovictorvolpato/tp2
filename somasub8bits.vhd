@@ -17,7 +17,7 @@ signal sig_s, sig_b: SIGNED(7 downto 0);
 begin
 
 
-sig_b <= B when OP = '0' else -B;
+sig_b <= B when OP = '1' else -B;
             
 sig_s <= A + sig_b;
 

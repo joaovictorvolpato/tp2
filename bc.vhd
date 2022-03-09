@@ -5,7 +5,8 @@ use ieee.numeric_std.all;
 ENTITY bc IS
 PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
 		opcode: IN UNSIGNED(3 downto 0);
-      enPC, enA, enB, enOUT, enOP, pronto, erro, calculando: OUT STD_LOGIC);
+		estado: OUT STD_LOGIC_VECTOR(2 downto 0);
+      enPC, enA, enB, enOUT, enOP, pronto, erro, calculando, iniciarCalculo: OUT STD_LOGIC);
 END bc;
 
 
@@ -13,6 +14,7 @@ ARCHITECTURE estrutura OF bc IS
 	TYPE state_type IS (S0, S1, S2, S3, S4, S5, S6, S7);
 	SIGNAL state: state_type;
 BEGIN
+
 	-- Parado S0
 	-- LerOperacao S1
 	-- LerA S2 
@@ -22,7 +24,7 @@ BEGIN
 	-- OperaçãoPronta S6
 	-- Erro S7
 	
-	-- 0000 No operation
+	-- 0000 Nada
 	-- 0001 A + B
 	-- 0010 A - B
 	-- 0011 A++
@@ -33,6 +35,7 @@ BEGIN
 	-- 1000 (A xor B) bit a bit
 	-- 1001 A * B
 	-- 1010 A raiz B
+	-- 1110 No operation
 	-- 1111 Halt
 	
 	-- Logica de proximo estado (e registrador de estado)
@@ -50,7 +53,7 @@ BEGIN
 					
 				-- Se preparando os dados, passa para cálculo
 				WHEN S1 =>
-					if (opcode = "0000" or opcode = "1111") then
+					if (opcode = "1110" or opcode = "1111") then
 						state <= S0; -- Parado
 					else
 						state <= S2; -- Ler A
@@ -58,7 +61,7 @@ BEGIN
 						
 				-- Após Ler A, vê qual deve ser o próximo estado
 				WHEN S2 =>
-					if (opcode = "0001" or opcode = "0010" or opcode = "0110" or opcode = "0111" or opcode = "1000") then
+					if (opcode = "0001" or opcode = "0010" or opcode = "0110" or opcode = "0111" or opcode = "1000" or opcode = "1001") then
 						state <= S3; -- Ler B
 					else
 						state <= S4; -- Operação
@@ -109,6 +112,8 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '0';
+				estado <= "000";
+				iniciarCalculo <= '0';
 			
 			-- Ler Instrução
 			WHEN S1 =>
@@ -120,6 +125,8 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '1';
+				estado <= "001";
+				iniciarCalculo <= '0';
 			
 			-- Ler A
 			WHEN S2 =>
@@ -131,6 +138,8 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '1';
+				estado <= "010";
+				iniciarCalculo <= '0';
 				
 			-- Ler B 
 			WHEN S3 =>
@@ -142,6 +151,8 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '1';
+				estado <= "011";
+				iniciarCalculo <= '0';
 				
 			-- Operação
 			WHEN S4 =>
@@ -153,6 +164,8 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '1';
+				estado <= "100";
+				iniciarCalculo <= '1';
 			
 			-- LerSaídaUla
 			WHEN S5 =>
@@ -164,7 +177,9 @@ BEGIN
 				pronto <= '0';
 				erro <= '0';
 				calculando <= '1';
-
+				estado <= "101";
+				iniciarCalculo <= '0';
+				
 			-- InstruçãoPronta
 			WHEN S6 =>
 				enA <= '0';
@@ -175,7 +190,9 @@ BEGIN
 				pronto <= '1'; -- Falar pro usuário que a saída tá pronta
 				erro <= '0';
 				calculando <= '0';
-
+				estado <= "110";
+				iniciarCalculo <= '0';
+				
 			-- Erro
 			WHEN S7 =>
 				enA <= '0';
@@ -186,6 +203,7 @@ BEGIN
 				pronto <= '0';
 				erro <= '1';
 				calculando <= '0';
+				estado <= "111";
 				
 		END CASE;
 	END PROCESS;

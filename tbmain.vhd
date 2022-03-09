@@ -9,16 +9,18 @@ end tbmain;
 
 architecture arch of tbmain is
 
-    signal reset, clk, inicio, pronto, erro, calculando, Overflow, Zero, Negativo: STD_LOGIC;
-    signal Saida1, Saida2: UNSIGNED(X-1 downto 0);
-    
+    signal reset, clk, inicio, pronto, erro, calculando, Overflow, Zero, Negativo, prontoUla, prontoSqrt: STD_LOGIC;
+    signal Saida1, Saida2, A, B: STD_LOGIC_VECTOR(X-1 downto 0);
+	 SIGNAL estado: STD_LOGIC_VECTOR(2 downto 0);
+    SIGNAL opcode: STD_LOGIC_VECTOR(3 downto 0);
+	 
 begin
-    UUT : entity work.main port map (reset, clk, inicio, pronto, erro, calculando, Saida1, Saida2, Overflow, Zero, Negativo);
+    UUT : entity work.main port map (reset, clk, inicio, pronto, prontoSqrt, erro, calculando, estado, Saida1, Saida2, A, B, opcode, Overflow, Zero, Negativo, prontoUla);
     inicio <= '1';
 	 reset <= '0';
 	 
     tb1 : process
-    constant periodo: time := 20 ns; 
+    constant periodo: time := 30 ns; 
     begin
         wait for periodo/2;
         clk <= '1';

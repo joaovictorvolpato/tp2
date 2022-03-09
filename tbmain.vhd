@@ -20,7 +20,7 @@ begin
 	 
 	 
     tb1 : process
-    constant periodo: time := 30 ns; 
+    constant periodo: time := 20 ns; 
     begin
         wait for periodo/2;
         clk <= '1';

@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 ENTITY bc IS
 PORT (reset, clk, inicio, prontoUla, erroUla: IN STD_LOGIC;
-		opcode: IN STD_LOGIC_VECTOR(3 downto 0);
+		opcode: IN UNSIGNED(3 downto 0);
       enPC, enA, enB, enOUT, enOP, pronto, erro, calculando: OUT STD_LOGIC);
 END bc;
 

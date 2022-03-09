@@ -15,8 +15,7 @@ use ieee.numeric_std.all;
 -- 1010 A raiz B
 -- 1111 Halt
 
-
-entity ula is
+entity boula is
 
 generic (X: natural := 8);
 
@@ -24,21 +23,23 @@ port (A, B: in UNSIGNED(X-1 downto 0); -- entrada de valores
         clk, rst : in STD_LOGIC;
         Op: in UNSIGNED(3 downto 0); -- operação escolhida 
         S1, S2: out UNSIGNED(X-1 downto 0); -- resultados das operações
-        N, Z, O: out STD_LOGIC); -- valor negativo, zero e overflow
-end ula;
+        N, Z, O, prontoSqrt: out STD_LOGIC); -- valor negativo, zero e overflow
+end boula;
 
 
-architecture arch of ula is
+architecture arch of boula is
 	 signal result1, result2 : UNSIGNED (X-1 downto 0);
     signal resultMult: UNSIGNED(X+X-1 downto 0);
     signal resultRaiz: UNSIGNED(X/2-1 downto 0);
-    signal resultSomaSub: UNSIGNED(X-1 downto 0);
     signal resultIncr, resultDecr : UNSIGNED(X-1 downto 0);
     signal resultAnd, resultOr, resultXor: UNSIGNED(X-1 downto 0);
     signal overflowSomaSub, overflowIncr, overflowDecr: STD_LOGIC;
-	signal reset, pronto: STD_LOGIC;
-	signal sigZeros, sigOne, sigOnes: UNSIGNED(X-1 downto 0);
-    
+    signal prontoRaiz: STD_LOGIC;
+	 signal sigZeros, sigOne, sigOnes: UNSIGNED(X-1 downto 0);
+	
+	 signal signedA, signedB, resultSomaSub: SIGNED(X-1 downto 0);
+    signal unsignedSomaSub: UNSIGNED(X-1 downto 0);
+	 
     component wallace8 is
         Port (A, B: in  UNSIGNED(X-1 downto 0);
                 prod: out  UNSIGNED(X+X-1 downto 0));
@@ -47,13 +48,11 @@ architecture arch of ula is
 	-- 1 soma 0 sub
     component somasub8bits is
         Port (Op: in STD_LOGIC;
-					A, B: in  UNSIGNED(X-1 downto 0);
-               S: out  UNSIGNED(X-1 downto 0);
-					OVF: out STD_LOGIC);
+            A, B: in  SIGNED(X-1 downto 0);
+            S: out  SIGNED(X-1 downto 0);
+            OVF: out STD_LOGIC);
     end component;
 
-
-	 
     component raizquadrada is
         Port (
             clk, rst : in STD_LOGIC;
@@ -62,36 +61,41 @@ architecture arch of ula is
             sq_root : out UNSIGNED(X/2-1 downto 0));
     end component;
 	 
-	 
 begin
-     sigZeros <= (others => '0');
-     sigOnes <= (others => '1');
-     sigOne <= sigZeros + "00000001";
-     SOMASUB: somasub8bits port map(Op(0), A, B, resultSomaSub, overflowSomaSub);
-     MULT: wallace8 port map(A, B, resultMult);
-     RAIZ : raizquadrada port map(clk, reset, A, pronto, resultRaiz);
-     resultIncr <= A + sigOne;
-     resultDecr <= A - sigOne;
+	signedA <= signed(A);
+	signedB <= signed(B);
+	unsignedSomaSub <= unsigned(resultSomaSub);
 
-     S1 <= result1; 
-     S2 <= result2;
+    -- Sinais 
+    sigZeros <= (others => '0');
+    sigOnes <= (others => '1');
+    sigOne <= sigZeros + "00000001";
+    -- Operações ULA
+    SOMASUB: somasub8bits port map(Op(0), signedA, signedB, resultSomaSub, overflowSomaSub);
+    MULT: wallace8 port map(A, B, resultMult);
+    RAIZ : raizquadrada port map(clk, rst, A, prontoRaiz, resultRaiz);
+    resultIncr <= A + sigOne;
+    resultDecr <= A - sigOne;
      
      -- Manda o resultado selecionado para a saída
-     result1 <= resultSomaSub when (Op = "0001" or Op = "0010") else
+    result1 <= unsignedSomaSub when (Op = "0001" or Op = "0010") else
                 resultIncr when Op = "0011" else
                 resultDecr when Op = "0100" else
                 resultMult(X-1 downto 0) when Op = "1001" else sigZeros;
                     
-     result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
+    result2 <= resultMult(X+X-1 downto X) when Op = "1001" else sigZeros;            
      
-     overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
-     overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 
-          
-     N <= '1' when (result1 < sigZeros and result2 < sigOne) else '0';
-     Z <= '1' when (result1 = sigZeros and result2 = sigZeros) else '0';    
-     O <= overflowSomaSub when (Op = "0001" or Op = "0010")
+    overflowIncr <= '1' when (A = "01111111" and Op = "0011") else '0'; 
+    overflowDecr <= '1' when (A = sigOnes and Op = "0100") else '0'; 
+
+    S1 <= result1; 
+    S2 <= result2;
+    prontoSqrt <= prontoRaiz;
+
+    N <= '1' when (result1 < sigZeros and result2 < sigOne) else '0';
+    Z <= '1' when (result1 = sigZeros and result2 = sigZeros) else '0';    
+    O <= overflowSomaSub when (Op = "0001" or Op = "0010")
         else overflowIncr when Op = "0011"
         else overflowDecr when Op = "0100"
         else '0';
-     
 end arch;

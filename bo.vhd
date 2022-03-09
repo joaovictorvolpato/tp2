@@ -12,10 +12,10 @@ generic(
 		  SIZE_OP: INTEGER:= 4
         );
 
-PORT (clk, enPC, enA, enB, enOp, enOut, reset : IN STD_LOGIC;
-	 flagZ, flagO, flagN: OUT STD_LOGIC;
-	 opcode: OUT UNSIGNED(SIZE_OP-1 downto 0);
-      S, PQ: OUT UNSIGNED(X-1 DOWNTO 0));
+PORT (clk, reset, inicio, enPC, enA, enB, enOp, enOut: IN STD_LOGIC;
+	 flagZ, flagO, flagN, prontoUla, erroULA: OUT STD_LOGIC;
+	 opcodeOut: OUT UNSIGNED(SIZE_OP-1 downto 0);
+    S, PQ: OUT UNSIGNED(X-1 DOWNTO 0));
 END bo;
 
 ARCHITECTURE estrutura OF bo IS
@@ -37,15 +37,16 @@ ARCHITECTURE estrutura OF bo IS
 		  d : IN STD_LOGIC;
 		  q : OUT STD_LOGIC);
 	END COMPONENT;
-
-	COMPONENT ula is
-		PORT (A, B: in UNSIGNED(X-1 downto 0); 
-				clk, rst : in STD_LOGIC;
-				Op: in UNSIGNED(SIZE_OP-1 downto 0); 
-				S1, S2: out UNSIGNED(X-1 downto 0); 
-				N, Z, O: out STD_LOGIC); 
-		END COMPONENT;
 	
+	COMPONENT mainula IS
+	PORT (reset, clk, inicio: IN STD_LOGIC;
+		pronto, erro: OUT STD_LOGIC;
+		A, B : IN UNSIGNED(X-1 DOWNTO 0);
+		Op: IN UNSIGNED(SIZE_OP-1 downto 0);
+		Saida1, Saida2 : OUT UNSIGNED(X-1 DOWNTO 0);
+		O, Z, N: OUT STD_LOGIC);
+	END COMPONENT;
+
 	COMPONENT pc is
 		PORT (enable, reset, clk: in STD_LOGIC;
 			PcCount: out UNSIGNED(SIZE_MEM-1 downto 0));
@@ -55,7 +56,7 @@ ARCHITECTURE estrutura OF bo IS
 		PORT (addr: in UNSIGNED(SIZE_MEM-1 downto 0);
 			data: out UNSIGNED(SIZE_WORD-1 downto 0));
 	END COMPONENT;
-
+	
 	-- Saídas do BO
 	SIGNAL sairegZ, sairegO, sairegN: STD_LOGIC;
 	SIGNAL sairegPQ, sairegS: UNSIGNED(X-1 downto 0);
@@ -63,7 +64,7 @@ ARCHITECTURE estrutura OF bo IS
 	-- Saídas Ula
 	SIGNAL saiulaPQ, saiulaS: UNSIGNED(X-1 downto 0);
 	SIGNAL saiulaO, saiulaZ, saiulaN: STD_LOGIC;
-	
+
 	-- Entradas da ULA
 	SIGNAL sairegA, sairegB: UNSIGNED (X-1 DOWNTO 0);
 	SIGNAL sairegOp: UNSIGNED(SIZE_OP-1 DOWNTO 0);
@@ -73,7 +74,7 @@ ARCHITECTURE estrutura OF bo IS
 BEGIN
 	PC1: pc PORT MAP(enPC, reset, clk, PcCount);
 	ROM1: rom PORT MAP(PcCount, DadoLido);
-	ULA1: ula PORT MAP(sairegA, sairegB, clk, reset, sairegOp, saiulaPQ, saiulaS, saiulaN, saiulaZ, saiulaO);
+	ULA1: mainula PORT MAP(reset, clk, inicio, prontoUla, erroULA, sairegA, sairegB, sairegOp, saiulaS, saiulaPQ, saiulaN, saiulaZ, saiulaO);
 
 	-- Regs entrada ULA
 	regOP: registrador_4bit PORT MAP (clk, enOP, DadoLido(SIZE_OP-1 downto 0), sairegOp); 
@@ -93,6 +94,6 @@ BEGIN
 	flagZ <= sairegZ;
 	flagN <= sairegN;
 	flagO <= sairegO;
-	opcode <= DadoLido(SIZE_OP-1 downto 0);
+	opcodeOut <= sairegOp;
 	
 END estrutura;

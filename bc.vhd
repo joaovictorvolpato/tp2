@@ -10,7 +10,7 @@ END bc;
 
 
 ARCHITECTURE estrutura OF bc IS
-	TYPE state_type IS (S0, S1, S2, S3, S4, S5, S6, S7);
+	TYPE state_type IS (S0, S1, S2, S3, S4, S5, S6, S7, S8);
 	SIGNAL state: state_type;
 BEGIN
 
@@ -53,7 +53,7 @@ BEGIN
 				-- Se preparando os dados, passa para cálculo
 				WHEN S1 =>
 					if (opcode = "1110" or opcode = "1111") then
-						state <= S0; -- Parado
+						state <= S8; -- Parado
 					else
 						state <= S2; -- Ler A
 					end if;
@@ -93,6 +93,9 @@ BEGIN
 					IF reset = '1' THEN
 						state <= S0;
 					END IF;
+				
+				WHEN S8 => 
+					state <= S8;
 				
 			END CASE;
 		END IF;
@@ -187,6 +190,17 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '1';
+				iniciarUla <= '0';
+				
+			-- Parado
+			WHEN S8 =>
+				enA <= '0';
+				enB <= '0';
+				enPC <= '0';
+				enOp <= '0';
+				enOUT <= '0';
+				pronto <= '0';
+				erro <= '0';
 				iniciarUla <= '0';
 				
 		END CASE;

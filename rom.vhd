@@ -48,22 +48,22 @@ architecture ROMarch of ROM is
 
     
     signal ROM1 : rom_type := (
-									 "00000110", -- OPCODE: 0110 - And
-                            "00000000", -- VALOR DE A
-                            "00000000", -- VALOR DE B
-                            "00000011", -- OPCODE: 0011 - A ++
-                            "01111111", -- VALOR DE A
-                            "00000111", -- OPCODE: 0111 - Or
-                            "00101011", -- VALOR DE A
-                            "00001110", -- VALOR DE B
-                            "00000101", -- OPCODE: 0101 - not(A)
-                            "11000100", -- VALOR DE A
-                            "00001000", -- OPCODE: 0010 - Xor
-                            "00110010", -- VALOR DE A
-                            "00001100", -- VALOR DE B
+									 "00001010", -- OPCODE: 1010 - SQRT(A)
+                            "01000000", -- VALOR DE A -- 64
+                            "00000001", -- OPCODE: 0001 - A + B
+                            "01111111", -- VALOR DE A -- 127
+									 "01111110", -- VALOR DE B -- 127
+                            "00000010", -- OPCODE: 0010 - A - B
+                            "00101011", -- VALOR DE A -- 43
+                            "00001110", -- VALOR DE B -- 14
+                            "00001001", -- OPCODE: 1001 - A * B
+                            "00001010", -- VALOR DE A -- 10
+									 "00001100", -- VALOR DE B -- 12
+									 "00000011", -- OPCODE: 0011 - A++
+                            "00110010", -- VALOR DE A -- 50
                             "00000100", -- OPCODE: 0100 - A--
-                            "10000000", -- VALOR DE A
-									 "00001111" -- OPCODE: 1111 - HALT+
+                            "10000011", -- VALOR DE A -- -125
+									 "00001111" -- OPCODE: 1111 - HALT+  
         );
 		  
 begin

@@ -23,7 +23,7 @@ port (A, B: in UNSIGNED(X-1 downto 0); -- entrada de valores
         clk, rst, iniciar_calculos: in STD_LOGIC;
         Op: in UNSIGNED(3 downto 0); -- operação escolhida 
         S1, S2: out UNSIGNED(X-1 downto 0); -- resultados das operações
-        N, Z, O, prontoSqrt: out STD_LOGIC); -- valor negativo, zero e overflow
+        N, Z, O, prontoSqrt, erroBoUla: out STD_LOGIC); -- valor negativo, zero e overflow
 end boula;
 
 
@@ -89,6 +89,7 @@ begin
     sigOnes <= (others => '1');
     sigOne <= sigZeros + "00000001";
 	 prontoSqrt <= prontoRaiz;
+	 erroBoUla <= '1' when (Op = "1010" and A(X-1) = '1') else '0'; -- Erro quando é raiz de negativo
 	 
     -- Operações ULA
     SOMASUB: somasub8bits port map(Op(0), signedA, signedB, resultSomaSub, overflowSomaSub);

@@ -17,7 +17,7 @@ use ieee.numeric_std.all;
 	-- 1111 Halt
 
 ENTITY fsmula IS
-PORT (clk, inicio, reset, prontoSqrt: IN STD_LOGIC;
+PORT (clk, inicio, reset, prontoSqrt, erroBoUla: IN STD_LOGIC;
       opcode: IN UNSIGNED(3 downto 0);
       prontoUla, erroUla, iniciar_ula, reset_ula: OUT STD_LOGIC);
 END fsmula;
@@ -51,7 +51,9 @@ BEGIN
 					
 				-- No calculo verifica qual a operação, caso seja sqrt vai esperar, se não já está pronto
 				WHEN S2 =>
-					if opcode = "1010" then
+					if erroBoUla = '1' then
+						state <= S4;
+					elsif opcode = "1010" then
 						if prontoSqrt = '1' then
 							 state <= S3;
 						end if;

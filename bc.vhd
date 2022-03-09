@@ -110,7 +110,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				estado <= "000";
 				iniciarUla <= '0';
 			
 			-- Ler Instrução
@@ -122,7 +121,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				estado <= "001";
 				iniciarUla <= '0';
 			
 			-- Ler A
@@ -134,7 +132,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				estado <= "010";
 				iniciarUla <= '0';
 				
 			-- Ler B 
@@ -146,7 +143,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				estado <= "011";
 				iniciarUla <= '0';
 				
 			-- Operação
@@ -158,7 +154,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '0';
-				estado <= "100";
 				iniciarUla <= '1';
 			
 			-- LerSaídaUla
@@ -170,7 +165,6 @@ BEGIN
 				enOUT <= '1'; -- Ler a Ula
 				pronto <= '0';
 				erro <= '0';
-				estado <= "101";
 				iniciarUla <= '0';
 				
 			-- InstruçãoPronta
@@ -182,7 +176,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '1'; -- Falar pro usuário que a saída tá pronta
 				erro <= '0';
-				estado <= "110";
 				iniciarUla <= '0';
 				
 			-- Erro
@@ -194,7 +187,6 @@ BEGIN
 				enOUT <= '0';
 				pronto <= '0';
 				erro <= '1';
-				estado <= "111";
 				iniciarUla <= '0';
 				
 		END CASE;

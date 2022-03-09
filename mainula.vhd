@@ -20,11 +20,11 @@ ARCHITECTURE estrutura OF mainula IS
         clk, rst, iniciar_calculos : in STD_LOGIC;
         Op: in UNSIGNED(SIZE_OP-1 downto 0); -- operação escolhida 
         S1, S2: out UNSIGNED(X-1 downto 0); -- resultados das operações
-        N, Z, O, prontoSqrt: out STD_LOGIC); -- valor negativo, zero e overflow
+        N, Z, O, prontoSqrt, erroBoUla: out STD_LOGIC); -- valor negativo, zero e overflow
     end COMPONENT;
 
     COMPONENT fsmula IS
-    PORT (clk, inicio, reset, prontoSqrt: IN STD_LOGIC;
+    PORT (clk, inicio, reset, prontoSqrt, erroBoUla: IN STD_LOGIC;
           opcode: IN UNSIGNED(SIZE_OP-1 downto 0);
           prontoUla, erroUla, iniciar_ula, reset_ula: OUT STD_LOGIC);
     END COMPONENT;
@@ -33,7 +33,7 @@ ARCHITECTURE estrutura OF mainula IS
 	SIGNAL S1, S2: UNSIGNED(X-1 DOWNTO 0);
 	SIGNAL prontoULA, erroULA: STD_LOGIC;
 	-- Signals Controle Ula
-    SIGNAL prontoSqrt, iniciar_ula, reset_ula: STD_LOGIC;
+    SIGNAL prontoSqrt, iniciar_ula, reset_ula, erroBoUla: STD_LOGIC;
 	
 	BEGIN
 	Saida1 <= S1;
@@ -41,7 +41,7 @@ ARCHITECTURE estrutura OF mainula IS
    pronto <= prontoULA;
    erro <= erroULA;
 	
-	CONTROLE: fsmula PORT MAP(clk, inicio, reset, prontoSqrt, Op, prontoULA, erroULA, iniciar_ula, reset_ula);
-	OPERATIVO: boula PORT MAP(A, B, clk, reset_ula, iniciar_ula, Op, S1, S2, N, Z, O, prontoSqrt);
+	CONTROLE: fsmula PORT MAP(clk, inicio, reset, prontoSqrt, erroBoUla, Op, prontoULA, erroULA, iniciar_ula, reset_ula);
+	OPERATIVO: boula PORT MAP(A, B, clk, reset_ula, iniciar_ula, Op, S1, S2, N, Z, O, prontoSqrt, erroBoUla);
 
 END estrutura;
